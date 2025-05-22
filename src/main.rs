@@ -1,5 +1,5 @@
 use clap::Parser;
-use r2::{commands, utils};
+use r2::commands;
 
 #[derive(Parser, Debug)]
 #[command(name = "r2")]
@@ -44,6 +44,8 @@ enum TodosSubcommand {
     Add,
     /// Remove a todo
     Remove,
+    /// Update a todo
+    Update,
 }
 
 fn main() {
@@ -64,6 +66,11 @@ fn main() {
             TodosSubcommand::Remove => {
                 if let Err(e) = commands::todos::remove::handle_remove() {
                     eprintln!("Error removing todo: {}", e);
+                }
+            }
+            TodosSubcommand::Update => {
+                if let Err(e) = commands::todos::update::handle_update() {
+                    eprintln!("Error updating todo: {}", e);
                 }
             }
         },

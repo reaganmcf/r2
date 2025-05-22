@@ -69,6 +69,19 @@ impl StateManager {
         Self::save(&state)
     }
 
+    pub fn update_todo(index: usize, title: String, description: Option<String>) -> Result<()> {
+        let mut state = Self::load()?;
+        if index >= state.todos.len() {
+            return Err(anyhow::anyhow!("Todo index out of bounds"));
+        }
+
+        let todo = &mut state.todos[index];
+        todo.title = title;
+        todo.description = description;
+
+        Self::save(&state)
+    }
+
     pub fn list_todos() -> Result<Vec<Todo>> {
         let state = Self::load()?;
         Ok(state.todos)
