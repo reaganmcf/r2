@@ -1,7 +1,7 @@
-use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
-use std::fs;
 use anyhow::{Context, Result};
+use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::PathBuf;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct AppState {
@@ -22,36 +22,31 @@ impl StateManager {
         let mut path = dirs::config_dir()
             .context("Failed to get config directory")?
             .join("r2");
-        
-        fs::create_dir_all(&path)
-            .context("Failed to create config directory")?;
-            
+
+        fs::create_dir_all(&path).context("Failed to create config directory")?;
+
         path.push("state.json");
         Ok(path)
     }
 
     pub fn load() -> Result<AppState> {
         let path = Self::get_state_path()?;
-        
+
         if !path.exists() {
             return Ok(AppState::default());
         }
 
-        let data = fs::read_to_string(&path)
-            .context("Failed to read state file")?;
+        let data = fs::read_to_string(&path).context("Failed to read state file")?;
 
-        serde_json::from_str(&data)
-            .context("Failed to deserialize state")
+        serde_json::from_str(&data).context("Failed to deserialize state")
     }
 
     pub fn save(state: &AppState) -> Result<()> {
         let path = Self::get_state_path()?;
-        
-        let data = serde_json::to_string_pretty(state)
-            .context("Failed to serialize state")?;
-        
-        fs::write(&path, data)
-            .context("Failed to write state file")
+
+        let data = serde_json::to_string_pretty(state).context("Failed to serialize state")?;
+
+        fs::write(&path, data).context("Failed to write state file")
     }
 
     pub fn add_todo(title: String, description: Option<String>) -> Result<()> {

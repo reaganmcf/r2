@@ -21,7 +21,7 @@ enum Commands {
 struct DebugCommand {
     /// Dump the application state to JSON
     #[command(subcommand)]
-    command: DebugSubcommand
+    command: DebugSubcommand,
 }
 
 #[derive(Parser, Debug)]
@@ -29,7 +29,6 @@ enum DebugSubcommand {
     /// Dump the state as JSON
     DumpState,
 }
-
 
 #[derive(Parser, Debug)]
 struct TodosCommand {
@@ -44,15 +43,12 @@ enum TodosSubcommand {
     /// Add a new todo
     Add,
     /// Remove a todo
-    Remove {
-        /// The index of the todo to remove
-        index: usize,
-    },
+    Remove,
 }
 
 fn main() {
     let cli = Cli::parse();
-    
+
     match &cli.command {
         Commands::Todos(todos) => match &todos.command {
             TodosSubcommand::List => {
@@ -65,10 +61,9 @@ fn main() {
                     eprintln!("Error adding todo: {}", e);
                 }
             }
-            TodosSubcommand::Remove { index } => {
-                match utils::state::StateManager::remove_todo(*index) {
-                    Ok(_) => println!("Todo removed successfully!"),
-                    Err(e) => eprintln!("Error removing todo: {}", e),
+            TodosSubcommand::Remove => {
+                if let Err(e) = commands::todos::remove::handle_remove() {
+                    eprintln!("Error removing todo: {}", e);
                 }
             }
         },
